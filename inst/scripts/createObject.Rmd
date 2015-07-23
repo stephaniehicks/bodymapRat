@@ -1,0 +1,336 @@
+---
+title: "bodymapRat"
+output: html_document
+---
+
+This is the code to produce a *ExpressionSet* object of the BodyMap RNA-Seq experiement by Yu et al. (2013) and GEO accession [GSE53960](http://www.ncbi.nlm.nih.gov/geo/query/acc.cgi?acc=GSE53960). 
+
+#### Citation: 
+
+#### Description extracted from GEO: 
+
+**Summary**: The rat has been used extensively as a model for evaluating chemical toxicities and for understanding drug mechanisms. However, its transcriptome across multiple organs, or developmental stages, has not yet been reported. Here we show, as part of the SEQC consortium efforts, a comprehensive rat transcriptomic BodyMap created by performing RNASeq on 320 samples from 11 organs of both sexes of juvenile, adolescent, adult and aged Fischer 344 rats. We catalogue the expression profiles of 40,064 genes, 65,167 transcripts, 31,909 alternatively spliced transcript variants and 2,367 non-coding genes/non-coding RNAs (ncRNAs) annotated in AceView. We find that organ-enriched, differentially expressed genes reflect the known organ-specific biological activities. A large number of transcripts show organ-specific, age-dependent or sex-specific differential expression patterns. We create a web-based, open-access rat BodyMap database of expression profiles with crosslinks to other widely used databases, anticipating that it will serve as a primary resource for biomedical research using the rat model.
+
+**Overall design**: We constructed a comprehensive RNA-Seq data set for studying the dynamics of the rat transcriptome using 320 RNA samples isolated from 11 organs (adrenal gland, brain, heart, kidney, liver, lung, muscle, spleen, thymus, and testes or uterus) from both sexes of Fischer 344 rats across four developmental stages (2-, 6-, 21-, and 104-weeks-old). Four biological replicates were used for each of the 80 sample groups.
+
+
+# Obtaining sample information from GEO
+The following code chunk obtains the sample information from the series matrix file downloaded from GEO. The columns are then parsed and new columns with shorter names and factor levels are added.
+
+```{r, eval=FALSE}
+suppressPackageStartupMessages(library("GEOquery"))
+gse <- getGEO("GSE53960")
+e <- gse$`GSE53960_series_matrix.txt.gz`
+pd <- pData(e)
+
+# extract SRA number
+library(stringr)
+pd$sraExperiment <- unlist(lapply(str_split(as.character(pd$relation.1),"=",n=2), function(x) x[2]))
+```
+
+
+The information which connects the sample information from GEO with the SRA run id is downloaded from [SRA](http://www.ncbi.nlm.nih.gov/sra?term=SRP037986) using the **Send to: File button**. Add the SRP ID to the end of the csv file name. 
+
+```{r, eval = FALSE}
+srp <- read.csv("SraRunInfo_SRP037986.csv")
+dim(srp)
+
+srpsmall <- srp[,c("SampleName", "Run", "Experiment", "Sample", "ScientificName", "BioSample",  "avgLength", "download_path")]
+colnames(srpsmall)[which(colnames(srpsmall) == "Experiment")] <- "sraExperiment"
+colnames(srpsmall)[which(colnames(srpsmall) == "Run")] <- "sraRun"
+colnames(srpsmall)[which(colnames(srpsmall) == "Sample")] <- "sraSample"
+colnames(srpsmall)[which(colnames(srpsmall) == "geo_accession")] <- "geoAccession"
+coldata <- merge(pd, srpsmall, by ="sraExperiment", all.x = TRUE)
+rownames(coldata) <- coldata$sraRun
+```
+
+
+Add the organ, sex, stage and technical replicates columns. 
+```{r, eval = FALSE}
+coldata$title = gsub("SEQC_", "", as.character(coldata$title))
+coldata$organ = as.character(coldata$source_name_ch1)
+coldata$sex = gsub("Sex: ", "", as.character(coldata$characteristics_ch1.2))
+coldata$stage = as.numeric(gsub("developmental stage \\(week\\): ", "", 
+                         as.character(coldata$characteristics_ch1.3)))
+
+# make technical replicates column
+BioSample = as.character(coldata$BioSample); uBioSample = unique(BioSample)
+
+techRep = rep(NA, 320)
+for (k in uBioSample) {
+  sel = BioSample %in% k
+  techRep[sel] = 1:sum(sel)
+}
+coldata$techRep = techRep
+
+# make a color column for organ
+col1 = factor(coldata$organ, levels=unique(coldata$Organ))
+levels(col1) = unique(col1)
+coldata$colOrgan = as.character(col1)
+```
+
+
+Load info on biological replicates (extracted from the supplement). 
+```{r, eval = FALSE}
+sample_info = read.table(paste0(path, "sample_info.csv"), 
+                         header=TRUE, sep=",", stringsAsFactors=FALSE)
+
+sample_info <- sample_info[match(sample_info$Sample_ID, coldata$title), ]
+```
+
+Add ERCC mix, RIN and barcode info to `coldata`
+```{r, eval = FALSE}
+# add mix info 
+mix = sample_info$ERCC_Mix
+names(mix) = sample_info$Sample_ID
+coldata$mix = mix[coldata$title]
+
+# Add RIN.
+# For the 2 bio samples that were re-done rin was set to "/"
+sel = sample_info$RNA_RIN == "/"
+rin = sample_info$RNA_RIN
+rin[sel] = "NA"
+names(rin) = sample_info$Sample_ID
+# add rin info 
+coldata$rnaRIN = rin[coldata$title]
+
+# Add barcode (there were 12 barcodes)
+# for the 2 bio samples that were re-done barcode was set to "/"
+sel = sample_info$BarCode == "/"
+barcode = sample_info$BarCode
+barcode[sel] = "NA"
+names(barcode) = sample_info$Sample_ID
+# add barcode info 
+coldata$barcode = barcode[coldata$title]
+```
+
+
+The sample table was saved to a CSV file for future reference. This file is included in the extdata directory. The second file will be used to extract all the SRA files from NCBI. 
+```{r, eval=FALSE}
+write.csv(coldata, file="sample_table.csv")
+write.table(coldata$sraRun, file = "sraFiles.txt", quote= FALSE,row.names = FALSE, col.names = FALSE)
+write.table(coldata$download_path, file = "sraFilesPath.txt", quote= FALSE,row.names = FALSE, col.names = FALSE)
+```
+
+
+# Obtaining FASTQ files from SRA
+
+#### Downloading individual `.sra` files
+Downloading all `.sra` files in the `sraFilesPath.txt`:  
+```{r, eval=FALSE}
+for f in `cat sraFilesPath.txt`; do wget $f; done
+```
+
+#### Extracting `.fastq` files
+
+A file containing the SRA run numbers was created: `sraFiles.txt` (see above). This file was used to extract the single-end `.fastq` files from the `.sra` files using the `fastq-dump` command in the SRA Toolkit. We use the gnu command `parallel` to parallelize this process. We specify the number of threads to send the individual commands to using the parameter `-j` and here we specify 25 threads.  
+
+```{r, eval=FALSE}
+cat sraFiles.txt | parallel -j 25 fastq-dump {}.sra 
+```
+
+#### Checking for batches
+
+We can extract the title of the first read from each fastq file to determine if there were batches. 
+```{r, eval=FALSE}
+for i in *.fastq; do sed q $i >> fastqBatches.txt; done
+```
+
+```{r, eval=FALSE}
+library(stringr)
+library(plyr)
+firstline <- read.table("fastqBatches.txt")
+fqInfo <- ldply(str_split(firstline$V2, ":", n=7))
+colnames(fqInfo) <- c("instrument", "runID", "fcID", "fcLane", "tile", 
+                      "xtile", "ytile")
+dim(fqInfo)
+fqDat <- data.frame("sraRun" = str_sub(firstline$V1, start = 2, end = -3), 
+                    fqInfo)
+coldata <- merge(coldata, fqDat, by = "sraRun")
+rownames(coldata) <- coldata$sraRun
+```
+
+
+# Overview of Alignment Workflow
+
+We will use `fastqc` and `trim_galore` for the pre-alignment, `STAR` for 
+the alignment steps for our RNA-Seq samples. 
+
+Steps | Tools | Description 
+--- | --- | --- 
+Pre-alignment | Fastqc | Initial quality control
+Pre-alignment  | Trim Galore | Adapter/quality trimming
+Alignment | STAR | Mapping fastq files; output BAM files 
+
+# Pre-alignment steps
+
+#### Investigate sequence quality
+
+We use the [`fastqc`](http://www.bioinformatics.babraham.ac.uk/projects/fastqc/)
+command to get an idea about the sequencing quality of the .fastq files. 
+Using `fastqc` can determine if the reads contain adapter sequences, 
+overrepresented sequences/contaminants and library complexity.  
+```{r, eval=FALSE}
+cat sraFiles.txt | parallel -j 4 fastqc {}.fastq
+```
+
+#### Adapter and quality trimming
+
+We use 
+[`trim_galore`](http://www.bioinformatics.babraham.ac.uk/projects/trim_galore/) 
+to trim the reads to improve mapping efficiency and reduce the chance of 
+misalignments. This will remove base calls with a Phred score of 20 or 
+lower, removes adapter sequences, removes sequence pairs where either 
+read became too short as a result of trimming (less than 20 bp).
+
+```{r, eval=FALSE}
+cat sraFiles.txt | parallel -j 4 trim_galore --fastqc {}.fastq
+```
+
+The `--fastqc` parameter re-runs `fastqc` on the trimmed files to compare 
+the quality of the reads before and after trimming. The output will return 
+files ending in `_trimmed.fq`. 
+
+
+
+
+# Create reference genome
+
+First download the rat genome file (`.fa`) and annotation files (`.gtf`) 
+files from ENSEMBL. Note: the files need to be unzipped for the next step 
+of `genomeGenerate` in STAR.  I also downloaded the `.fa` and `.gtf` file 
+for the ERCC 92 spike-ins from [Life Technologies](https://www.lifetechnologies.com/order/catalog/product/4456739). 
+```{r, engine='bash', eval=FALSE}
+cd <path_to>/reference/genomes/rattus/ENSEMBL/
+    
+# download and unzip the rat genome from ENSEMBL
+wget ftp://ftp.ensembl.org/pub/release-80/fasta/rattus_norvegicus/dna/Rattus_norvegicus.Rnor_6.0.dna.toplevel.fa.gz
+wget ftp://ftp.ensembl.org/pub/release-80/gtf/rattus_norvegicus/Rattus_norvegicus.Rnor_6.0.80.gtf.gz
+gunzip Rattus_norvegicus.Rnor_6.0.dna.toplevel.fa.gz
+gunzip Rattus_norvegicus.Rnor_6.0.80.gtf.gz
+
+# download and unzip the ERCC transcripts (.fa and .gtf files)
+https://tools.lifetechnologies.com/content/sfs/manuals/ERCC92.zip
+unzip ERCC92.zip
+
+# combine the .fa and .gtf files from the ERCC transcripts and the rat genome
+cat Rattus_norvegicus.Rnor_6.0.dna.toplevel.fa ERCC92.fa > Rattus_withERCC.fa
+cat Rattus_norvegicus.Rnor_6.0.80.gtf ERCC92.gtf > Rattus_withERCC.gtf
+```
+
+Next, we use the `--runMode genomeGenerate` in STAR to generate the genome 
+index files. This is only done once per genome/annotation combination. This 
+directory was created (with `mkdir`) before STAR run and needs to writing 
+permissions. The filesystem needs to have at least 100GB of disk space 
+available for a typical mammalian genome. The parameter `--genomeFastaFiles` 
+points to the `.fa` file and the parameter `--sjdbGTFfile` points to the 
+`.gtf` file. STAR states the `--sjdbOverhang` parameter should the read 
+length - 1. Here the single-end reads are of length 50. 
+
+```{r, engine='bash', eval=FALSE}
+# With 92 ERCC spike-ins
+STAR --runThreadN 10 --runMode genomeGenerate --genomeDir reference/STAR \
+ --genomeFastaFiles reference/genomes/rattus/ENSEMBL/Rattus_withERCC.fa \
+ --sjdbGTFfile reference/genomes/rattus/ENSEMBL/Rattus_withERCC.gtf \
+ --sjdbOverhang 49 
+```
+
+
+# Mapping reads
+
+The reads were mapped using the 
+[STAR read aligner](https://github.com/alexdobin/STAR) rattus using the 
+annotations from Ensembl release 80. We use the `--runMode alignReads` 
+and use `--genomeDir` to specify the directory where the genome indicies
+are stored.
+
+```{r, eval=FALSE}
+rename _trimmed.fq .fastq *_trimmed.fq
+
+for f in `cat sraFiles.txt`; do STAR \
+ --runThreadN 8 --runMode alignReads \ 
+ --genomeDir reference/STAR \
+ --readFilesIn fastq/$f.fasta \
+ --outSAMtype BAM Unsorted \
+ --outFileNamePrefix aligned/$f.; done 
+```
+
+
+# Counting Reads
+
+A transcript database for the homo sapiens Ensembl genes was obtained from 
+Biomart. This takes 20 minutes. 
+
+```{r, eval=FALSE}
+library("GenomicFeatures")
+txdb <- makeTxDbFromBiomart(biomart="ensembl", 
+                            dataset="rnorvegicus_gene_ensembl")
+exonsByGene <- exonsBy(txdb, by="gene")
+
+ercctxdb <- makeTxDbFromGFF("<path_to>/reference/genomes/rattus/ENSEMBL/ERCC92.gtf", 
+                            format = "gtf")
+erccexonsByGene <- exonsBy(ercctxdb, by="gene")
+```
+
+The BAM files were specified using the SRR id from the SRA. A yield size of 2 
+million reads was used to cap the memory used during read counting.
+
+```{r, eval=FALSE}
+dat <- read.table("<path_to>/sraFiles.txt")
+fls <- file.path("aligned", paste0(dat$V1, ".Aligned.out.bam"))
+library("Rsamtools")
+bamLst <- BamFileList(fls, yieldSize=2000000)
+```
+
+We use the `summarizeOverlaps` function to create a `SummarizedExperiement` 
+object, add the sample information as column data and finally attached 
+the `MIAME` information using the Pubmed ID.
+```{r, eval=FALSE}
+library("GenomicAlignments")
+bodymapNoERCC <- summarizeOverlaps(features=exonsByGene, reads=bamLst, mode="Union", 
+                            singleEnd=FALSE, ignore.strand=TRUE, fragments=TRUE)
+
+bodymapERCC <- summarizeOverlaps(features=erccexonsByGene, reads=bamLst, mode="Union", 
+                            singleEnd=FALSE, ignore.strand=TRUE, fragments=TRUE)
+
+# combine bodymapNoERCC and bodymapERCC
+bodymapEset = rbind(assay(bodymapNoERCC), assay(bodymapERCC))
+
+# Drop a total of 8 technical replicates
+# RNA RIN unavailable for (Kidney, Male, 104 weeks; bio repl 3 and 4)    
+sample_info[sample_info$RNA_RIN == "/", ]
+sel = coldata$title %in% c("Kdn_M_104_2", "Kdn_M_104_3")
+drop1 = rownames(coldata)[sel]
+
+drop2 = colSums(assay(bodymapERCC)) < 5000
+drop2 = names(drop2)[drop2]
+
+# drop samples
+drop = rownames(coldata) %in% c(drop1, drop2))
+bodymapEset = bodymapEset[, !drop]
+
+# subset coldata columns for only relevant information
+keepCols = c("sraExperiment", "sraRun", "title", "geoAccession", "sraSample", 
+             "BioSample", "avgLength", "organ", "sex", "stage", "techRep", 
+             "colOrgan", "mix", "RNA_RIN", "barcode")
+coldata = coldata[, keepCols]
+
+# make new pDat as an AnnotatedDataFrame
+pDat = new("AnnotatedDataFrame", data.frame(coldata, stringsAsFactors=FALSE))
+
+# make bodymapRat eset
+bodymapRat = ExpressionSet(assayData=bodymapEset, phenoData=pDat)
+
+# Save bodymapRat object
+save(bodymapRat, file="bodymapRat.rda")
+```
+
+
+# Session information
+
+```{r}
+sessionInfo()
+```
+
+
+

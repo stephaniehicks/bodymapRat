@@ -1,0 +1,18 @@
+Package: bodymapRat
+Title: Rat Bodymap Data
+Version: 0.0.1
+Author: Stephanie Hicks and Kwame Okrah
+Maintainer: Stephanie Hicks <shicks@jimmy.harvard.edu>
+Description: This package contains an ExpressionSet
+   from the Yu et al. (2013) paper that performed the 
+   rat BodyMap across 11 organs and 4 developmental stages. 
+   Raw FASTQ files were downloaded and mapped using STAR. 
+Depends:
+    R (>= 3.2.0)
+Suggests:
+    BiocGenerics,
+    BiocStyle, 
+    knitr,
+License: GPL (>=3)
+LazyData: true
+VignetteBuilder: knitr

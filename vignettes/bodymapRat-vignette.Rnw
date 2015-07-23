@@ -1,0 +1,113 @@
+%\VignetteIndexEntry{The bodymapRat data user's guide}
+%\VignettePackage{bodymapRat}
+%\VignetteEngine{knitr::knitr}
+\documentclass{article}
+
+<<style-knitr, eval=TRUE, echo=FALSE, results="asis">>=
+    BiocStyle::latex()
+@
+
+\setlength{\parskip}{1\baselineskip}
+\setlength{\parindent}{0pt}
+
+\title{The \texttt{bodymapRat} data user's guide}
+\author{Stephanie C. Hicks \texttt{shicks@jimmy.harvard.edu} \and
+Kwame Okrah \texttt{kwame.okrah@gmail.com} }
+
+\date{Modified: July 23, 2015.  Compiled: \today}
+
+
+\begin{document}
+
+\maketitle
+
+
+
+\section{Overview}
+
+
+The \texttt{bodymapRat} package contains gene expression data on 652 RNA-Seq samples from a
+comprehensive rat transcriptomic BodyMap study. These samples include the sequence
+identifier information provided in the header of the FASTQ files which can be used
+as a surrogate for batch. These samples have not been normalized or pre-processed.
+
+The data are an \texttt{ExpressionSet}. The phenotypic information can be extracted
+using the \texttt{pData()} function and a description is listed in Table
+\ref{tab:description}.
+
+\begin{table}[h]
+\caption{Description of phenotypic data in the \texttt{bodymapRat} ExpressionSet. }
+\begin{center}
+\begin{tabular}{|c|c|}
+\hline
+Title & Description \\
+\hline
+sraExperiment & SRA Experiment ID\\
+title & Title of sample provided by the authors \\
+geoAccession & GEO Accession ID\\
+BioSample & BioSample ID\\
+avgLength & Average read length \\
+instrument & Machine identifier (from FASTQ header) \\
+runID & Run ID (from FASTQ header) \\
+fcID & Flow cell ID (from FASTQ header) \\
+fcLane & Flow cell lane (from FASTQ header) \\
+tile & Tile (from FASTQ header)\\
+xtile & xtile (from FASTQ header) \\
+ytile & ytile (from FASTQ header)\\
+organ & Body organ \\
+sex & Gender \\
+stage & Stage \\
+techRep & Technical replicate number \\
+colOrgan & Column of colors to help with plotting \\
+rnaRIN & RIN number \\
+barcode & barcode number\\
+\hline
+\end{tabular}
+\end{center}
+\label{tab:description}
+\end{table}%
+
+
+The data can be accessed as follows:
+<<loadlibs, message=FALSE, warning=FALSE>>=
+library(Biobase)
+library(useful)
+library(bodymapRat)
+@
+
+<<loaddata>>=
+data(bodymapRat)
+
+# Get the expression data
+edata = exprs(bodymapRat)
+corner(edata)
+
+# Get the pheno data
+pdata = pData(bodymapRat)
+head(pdata)
+@
+
+The data in this package are used as an example data set in the \texttt{qsmooth}
+package.
+
+\section{References}
+
+\begin{enumerate}
+
+\item Yu et al. (2013). A rat RNA-Seq transcriptomic BodyMap across 11 organs
+and 4 developmental stages. \textit{Nature Communications} \textbf{5}:3230.
+PMID: 24510058. PMCID: PMC3926002.
+
+
+\end{enumerate}
+\section{SessionInfo}
+
+<<sessionInfo,results ='markup'>>=
+sessionInfo()
+@
+
+
+
+
+
+\end{document}
