@@ -2,13 +2,14 @@ Package: bodymapRat
 Title: Experimental dataset from the rat BodyMap project
 Version: 0.99.0
 Authors@R: c(
-    person(c("Stephanie", "C."), "Hicks", role = c("aut", "cre"), email = "shicks19@jhu.edu"),
+    person("Stephanie", "Hicks", role = c("aut", "cre"), email = "shicks19@jhu.edu"),
     person("Kwame", "Okrah", role = "aut"))
+Maintainer: Stephanie Hicks <shicks19@jhu.edu>
 Description: This package contains a SummarizedExperiment
    from the Yu et al. (2013) paper that performed the 
    rat BodyMap across 11 organs and 4 developmental stages. 
    Raw FASTQ files were downloaded and mapped using STAR. 
-Depends: SummarizedExperiment
+Depends: R (>= 3.5.1), SummarizedExperiment
 Suggests: knitr, BiocStyle
 biocViews: SequencingData, RNASeqData, ExpressionData
 NeedsCompilation: no

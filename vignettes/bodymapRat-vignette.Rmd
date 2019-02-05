@@ -2,11 +2,11 @@
 title: "The bodymapRat data user's guide"
 author: 
 - name: Stephanie Hicks
-  affiliation: Johns Hopkins Bloomberg School of Public Health
-  email: shicks19@jhu.edu
+    affiliation: Johns Hopkins Bloomberg School of Public Health
+    email: shicks19@jhu.edu
 - name: Kwame Okrah
-  affiliation: Genentech
-  email: kwame.okrah@gmail.com
+    affiliation: Genentech
+    email: kwame.okrah@gmail.com
 date: Feburary 05, 2019
 package: bodymapRat
 output: html_document
@@ -21,7 +21,7 @@ BiocStyle::markdown()
 ```
 
 <!--
-  %% \VignetteEngine{knitr::knitr}
+    %% \VignetteEngine{knitr::knitr}
 -->
 
 ## Introduction
