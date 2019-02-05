@@ -3,7 +3,7 @@ title: "bodymapRat"
 output: html_document
 ---
 
-This is the code to produce a *ExpressionSet* object of the BodyMap RNA-Seq experiement by Yu et al. (2013) and GEO accession [GSE53960](http://www.ncbi.nlm.nih.gov/geo/query/acc.cgi?acc=GSE53960). 
+This is the code to produce a *SummarizedExpression* object of the BodyMap RNA-Seq experiement by Yu et al. (2013) and GEO accession [GSE53960](http://www.ncbi.nlm.nih.gov/geo/query/acc.cgi?acc=GSE53960). 
 
 #### Citation: 
 
@@ -287,6 +287,7 @@ object, add the sample information as column data and finally attached
 the `MIAME` information using the Pubmed ID.
 ```{r, eval=FALSE}
 library("GenomicAlignments")
+library(SummarizedExperiment)
 bodymapNoERCC <- summarizeOverlaps(features=exonsByGene, reads=bamLst, mode="Union", 
                             singleEnd=FALSE, ignore.strand=TRUE, fragments=TRUE)
 
@@ -318,11 +319,12 @@ coldata = coldata[, keepCols]
 # make new pDat as an AnnotatedDataFrame
 pDat = new("AnnotatedDataFrame", data.frame(coldata, stringsAsFactors=FALSE))
 
-# make bodymapRat eset
-bodymapRat = ExpressionSet(assayData=bodymapEset, phenoData=pDat)
+# create a SummarizedExperiment object
+bodymapRat <- SummarizedExperiment(assays=SimpleList(counts=bodymapEset),
+                                   colData=pDat)
 
 # Save bodymapRat object
-save(bodymapRat, file="bodymapRat.rda")
+save(bodymapRat, file="../data/bodymapRat.rda")
 ```
 
 

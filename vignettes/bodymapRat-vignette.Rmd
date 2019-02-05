@@ -1,0 +1,101 @@
+---
+title: "The bodymapRat data user's guide"
+author: 
+- name: Stephanie Hicks
+  affiliation: Johns Hopkins Bloomberg School of Public Health
+  email: shicks19@jhu.edu
+- name: Kwame Okrah
+  affiliation: Genentech
+  email: kwame.okrah@gmail.com
+date: Feburary 05, 2019
+package: bodymapRat
+output: html_document
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+```{r style, echo = FALSE, results = 'asis'}
+BiocStyle::markdown()
+```
+
+<!--
+  %% \VignetteEngine{knitr::knitr}
+-->
+
+## Introduction
+
+The `bodymapRat` package contains gene expression 
+data on 652 RNA-Seq samples from a comprehensive rat 
+transcriptomic BodyMap study. These samples include 
+the sequence identifier information provided in the 
+header of the FASTQ files which can be used as a 
+surrogate for batch. These samples have not been
+normalized or pre-processed.
+
+The data are provided in a `SummarizedExperiment`. The 
+phenotypic information can be extracted using the 
+`colData()` function and a description of the phenotypic
+data is listed in the table below:
+
+| Title | Description |
+| :--- | :--- |
+| sraExperiment | SRA Experiment ID | 
+| title | Title of sample provided by the authors | 
+| geoAccession | GEO Accession ID | 
+| BioSample | BioSample ID | 
+| avgLength | Average read length | 
+| instrument | Machine identifier (from FASTQ header) | 
+| runID | Run ID (from FASTQ header) | 
+| fcID | Flow cell ID (from FASTQ header) | 
+| fcLane | Flow cell lane (from FASTQ header) | 
+| tile | Tile (from FASTQ header) | 
+| xtile | xtile (from FASTQ header) | 
+| ytile | ytile (from FASTQ header) | 
+| organ | Body organ | 
+| sex | Gender | 
+| stage | Stage | 
+| techRep | Technical replicate number | 
+| colOrgan | Column of colors to help with plotting | 
+| rnaRIN | RIN number | 
+| barcode | barcode number | 
+
+
+The data can be accessed as follows:
+
+```{r loadlibs, message=FALSE, warning=FALSE}
+library(SummarizedExperiment)
+library(bodymapRat)
+```
+
+```{r loaddata}
+data(bodymapRat)
+
+# Get the expression data
+counts = assay(bodymapRat)
+dim(counts)
+counts[1:5, 1:5]
+
+# Get the pheno data
+head(colData(bodymapRat))
+```
+
+The data in this package are used as an example
+data set in the `qsmooth` package.
+
+# References
+
+1. Yu et al. (2013). A rat RNA-Seq transcriptomic
+BodyMap across 11 organs and 4 developmental stages.
+_Nature Communications_ **5**:3230. PMID: 24510058.
+PMCID: PMC3926002.
+
+
+# SessionInfo
+
+```{r sessionInfo,results ='markup'}
+sessionInfo()
+```
+
+
