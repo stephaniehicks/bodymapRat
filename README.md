@@ -1,6 +1,6 @@
 # bodymapRat
 
-This package contains an ExpressionSet
+This package contains a SummarizedExperiment object
    from the Yu et al. (2013) paper that performed the 
    rat BodyMap across 11 organs and 4 developmental stages. 
    Raw FASTQ files were downloaded and mapped using STAR. 
