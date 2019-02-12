@@ -10,6 +10,8 @@ author:
 date: Feburary 05, 2019
 package: bodymapRat
 output: html_document
+vignette: >
+    %\VignetteEncoding{UTF-8}
 ---
 
 ```{r setup, include=FALSE}
@@ -21,7 +23,8 @@ BiocStyle::markdown()
 ```
 
 <!--
-    %% \VignetteEngine{knitr::knitr}
+    % \VignetteEngine{knitr::knitr}
+    %\VignetteIndexEntry{The bodymapRat data user's guide}
 -->
 
 ## Introduction
@@ -94,7 +97,7 @@ PMCID: PMC3926002.
 
 # SessionInfo
 
-```{r sessionInfo,results ='markup'}
+```{r sessionInfo}
 sessionInfo()
 ```
 

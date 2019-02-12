@@ -9,12 +9,10 @@ Description: This package contains a SummarizedExperiment
    from the Yu et al. (2013) paper that performed the 
    rat BodyMap across 11 organs and 4 developmental stages. 
    Raw FASTQ files were downloaded and mapped using STAR. 
-Depends: R (>= 3.5.1), SummarizedExperiment
-Suggests: 
-    knitr,
-    BiocStyle,
-    testthat
-biocViews: SequencingData, RNASeqData, ExpressionData
+Depends: R (>= 3.6.0), SummarizedExperiment
+Suggests: knitr, BiocStyle, testthat
+biocViews: SequencingData, RNASeqData, ExpressionData, 
+    ExperimentData
 NeedsCompilation: no
 License: CC BY 4.0
 VignetteBuilder: knitr

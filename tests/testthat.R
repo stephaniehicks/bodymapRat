@@ -1,7 +1,7 @@
-context("checking the bodymapRat dataset")
 library(testthat)
-library(bodymapRat)
+context("checking the bodymapRat dataset")
 
+library(bodymapRat)
 test_that("checking number of rows in bodymapRat object", {
   data(bodymapRat)
   
