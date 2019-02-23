@@ -1,2 +1,5 @@
 Changes in version 0.99.0 (2019-02-07)
 + Submitted to Bioconductor
+
+Changes in version 0.99.1 (2019-02-23)
++ Compressed and re-saved data object

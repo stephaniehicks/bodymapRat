@@ -324,7 +324,7 @@ bodymapRat <- SummarizedExperiment(assays=SimpleList(counts=bodymapEset),
                                    colData=pDat)
 
 # Save bodymapRat object
-save(bodymapRat, file="../data/bodymapRat.rda")
+save(bodymapRat, file="../data/bodymapRat.rda", compress="xz")
 ```
 
 
