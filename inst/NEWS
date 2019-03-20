@@ -3,3 +3,11 @@ Changes in version 0.99.0 (2019-02-07)
 
 Changes in version 0.99.1 (2019-02-23)
 + Compressed and re-saved data object
+
+Changes in version 0.99.3 (2019-03-19)
++ Convert data package to ExperimentHub package
++ Removed .rda object from data/ folder
++ Removed Maintainer from DESCRIPTION file
++ Updated README.md to include bioconductor installation
++ Moved and renamed file to create data object into inst/scripts/make-data.Rmd
++ Created a make-metadata.R file

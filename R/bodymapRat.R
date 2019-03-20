@@ -10,8 +10,9 @@
 #' The purpose is to create an example object for the man
 #' pages and vignette in this package. 
 #' 
-#' The object was created using the script in /inst and
-#' located in the /data folder. 
+#' The SummarizedExperiment object was created using 
+#' the /inst/scripts/make-data.Rmd and is downloaded from
+#' ExperimentHub
 #' 
 #' @docType data
 #' @format A SummarizedExperiment object with 652 RNA-seq

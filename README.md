@@ -11,14 +11,25 @@ in the /vignettes folder.
 # Installation
 
 The R-package **bodymapRat** can be installed from Github using the R 
-package **devtools**.
+package **devtools**: 
+
 ```s
 library(devtools)
 install_github("stephaniehicks/bodymapRat")
 ```
+
+It can also be installed using Bioconductor: 
+
+```s
+# install BiocManager from CRAN (if not already installed)
+install.packages("BiocManager")
+
+# install bodymapRat package
+BiocManager::install("bodymapRat")
+```
+
 # Bug reports
 Report bugs as issues on the [GitHub repository](https://github.com/stephaniehicks/bodymapRat)
-
 
 # Contributors
 
