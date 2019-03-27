@@ -11,3 +11,7 @@ Changes in version 0.99.3 (2019-03-19)
 + Updated README.md to include bioconductor installation
 + Moved and renamed file to create data object into inst/scripts/make-data.Rmd
 + Created a make-metadata.R file
+
+Changes in version 0.99.4 (2019-03-27)
++ Now have successfully removed .rda object from data/ folder
++ BFG Repo-Cleaner to remove large data file and clean git tree
