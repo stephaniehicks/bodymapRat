@@ -68,20 +68,27 @@ data is listed in the table below:
 The data can be accessed as follows:
 
 ```{r loadlibs, message=FALSE, warning=FALSE}
-library(SummarizedExperiment)
+library(SummarizedExperiment) 
 library(bodymapRat)
 ```
 
+We use the `bodymapRat()` function to download the 
+relevant files from _Bioconductor_'s 
+[ExperimentHub](http://bioconductor.org/packages/ExperimentHub) web 
+resource. Running this function will download a 
+`SummarizedExperiment` object, which contains read counts, as 
+well as the metadata on the rows (genes) and columns (cells). 
+
 ```{r loaddata}
-data(bodymapRat)
+bm_rat <- bodymapRat()
 
 # Get the expression data
-counts = assay(bodymapRat)
+counts = assay(bm_rat)
 dim(counts)
 counts[1:5, 1:5]
 
-# Get the pheno data
-head(colData(bodymapRat))
+# Get the meta data along columns
+head(colData(bm_rat))
 ```
 
 The data in this package are used as an example

@@ -1,6 +1,6 @@
 Package: bodymapRat
 Title: Experimental dataset from the rat BodyMap project
-Version: 0.99.4
+Version: 0.99.5
 Authors@R: c(
     person("Stephanie", "Hicks", role = c("aut", "cre"), 
             email = "shicks19@jhu.edu"),
