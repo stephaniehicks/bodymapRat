@@ -20,3 +20,5 @@ Changes in version 0.99.5 (2019-03-27)
 + Added .onLoad() function as noted in ExperimentHub documentation
 + Converted vignette and unit tests to load data from ExperimentHub
 
+Changes in version 0.99.6 (2019-03-29)
++ Added documentation for bodymapRat object with examples
