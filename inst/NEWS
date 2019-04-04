@@ -22,3 +22,7 @@ Changes in version 0.99.5 (2019-03-27)
 
 Changes in version 0.99.6 (2019-03-29)
 + Added documentation for bodymapRat object with examples
+
+Changes in version 0.99.7 (2019-04-03)
++ Fixed error in header of vignette
++ Adding citation to package

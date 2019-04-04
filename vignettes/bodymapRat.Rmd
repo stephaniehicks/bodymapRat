@@ -1,31 +1,33 @@
 ---
 title: "The bodymapRat data user's guide"
-author: 
-- name: Stephanie Hicks
-    affiliation: Johns Hopkins Bloomberg School of Public Health
-    email: shicks19@jhu.edu
+author:
+- name: Stephanie C. Hicks
+  affiliation: Johns Hopkins Bloomberg School of Public Health
 - name: Kwame Okrah
-    affiliation: Genentech
-    email: kwame.okrah@gmail.com
-date: Feburary 05, 2019
+  affiliation: Genentech
+output:
+  BiocStyle::html_document:
+    toc_float: true
 package: bodymapRat
-output: html_document
-vignette: >
-    %\VignetteEncoding{UTF-8}
+abstract: |
+ This package contains a SummarizedExperiment
+   from the Yu et al. (2013) paper that performed the 
+   rat BodyMap across 11 organs and 4 developmental stages. 
+   Raw FASTQ files were downloaded and mapped using STAR. 
+   Data is available on ExperimentHub as a data package.
+vignette: |
+  %\VignetteIndexEntry{The bodymapRat data user's guide}
+  %\VignetteEngine{knitr::rmarkdown}
 ---
 
-```{r setup, include=FALSE}
-knitr::opts_chunk$set(echo = TRUE)
+```{r, echo=FALSE, results="hide", message=FALSE}
+require(knitr)
+opts_chunk$set(error=FALSE, message=FALSE, warning=FALSE)
 ```
 
-```{r style, echo = FALSE, results = 'asis'}
+```{r style, echo=FALSE, results='asis'}
 BiocStyle::markdown()
 ```
-
-<!--
-    % \VignetteEngine{knitr::knitr}
-    %\VignetteIndexEntry{The bodymapRat data user's guide}
--->
 
 ## Introduction
 
@@ -92,7 +94,8 @@ head(colData(bm_rat))
 ```
 
 The data in this package are used as an example
-data set in the `qsmooth` package.
+data set in the 
+[`qsmooth` Bioconductor package](http://bioconductor.org/packages/qsmooth).
 
 # References
 
