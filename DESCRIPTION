@@ -1,9 +1,10 @@
 Package: bodymapRat
 Title: Experimental dataset from the rat BodyMap project
-Version: 0.99.7
+Version: 0.99.8
 Authors@R: c(
     person("Stephanie", "Hicks", role = c("aut", "cre"), 
-            email = "shicks19@jhu.edu"),
+            email = "shicks19@jhu.edu", 
+            comment = c(ORCID = "0000-0002-7858-0231")),
     person("Kwame", "Okrah", role = "aut"))
 Description: This package contains a SummarizedExperiment
    from the Yu et al. (2013) paper that performed the 
