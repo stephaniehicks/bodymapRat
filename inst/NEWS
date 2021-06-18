@@ -29,3 +29,7 @@ Changes in version 0.99.7 (2019-04-03)
 
 Changes in version 0.99.8 (2019-04-04)
 + Adding ORCID for Stephanie Hicks
+
+Changes in version 1.9.1 (2021-06-18)
++ Added `rmarkdown` to Suggests in DESCRIPTION to resolve changes in `knitr`
+

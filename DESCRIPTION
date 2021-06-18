@@ -1,6 +1,6 @@
 Package: bodymapRat
 Title: Experimental dataset from the rat BodyMap project
-Version: 1.9.0
+Version: 1.9.1
 Authors@R: c(
     person("Stephanie", "Hicks", role = c("aut", "cre"), 
             email = "shicks19@jhu.edu", 
@@ -13,7 +13,7 @@ Description: This package contains a SummarizedExperiment
    Data is available on ExperimentHub as a data package.
 Depends: R (>= 3.6.0), SummarizedExperiment, ExperimentHub
 Imports: utils
-Suggests: knitr, BiocStyle, testthat
+Suggests: rmarkdown, knitr, BiocStyle, testthat
 biocViews: SequencingData, RNASeqData, ExpressionData, 
     ExperimentData, ExperimentHub
 NeedsCompilation: no
